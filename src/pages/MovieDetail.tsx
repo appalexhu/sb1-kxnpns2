@@ -85,6 +85,8 @@ const MovieDetail = () => {
     }))
   };
 
+  const ogImageUrl = tmdb.getImageUrl(movie.backdrop_path, 'original');
+
   return (
     <>
       <Helmet>
@@ -93,7 +95,15 @@ const MovieDetail = () => {
         
         <meta property="og:title" content={`Learn English with ${title} - Wordy Language Learning`} />
         <meta property="og:description" content={`Improve your English through ${title}. Discover vocabulary, phrases, and cultural context while watching.`} />
-        <meta property="og:image" content={tmdb.getImageUrl(movie.backdrop_path, 'original')} />
+        <meta property="og:image" content={ogImageUrl} />
+        <meta property="og:image:width" content="1280" />
+        <meta property="og:image:height" content="720" />
+        <meta property="og:type" content={isMovie ? 'video.movie' : 'video.tv_show'} />
+        
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={`Learn English with ${title} - Wordy Language Learning`} />
+        <meta name="twitter:description" content={`Improve your English through ${title}. Discover vocabulary, phrases, and cultural context while watching.`} />
+        <meta name="twitter:image" content={ogImageUrl} />
         
         <meta name="keywords" content={`learn english with ${title}, ${title} vocabulary, english vocabulary ${title}, learn english ${isMovie ? 'movies' : 'tv shows'}, ${title} english subtitles`} />
         
@@ -103,7 +113,6 @@ const MovieDetail = () => {
       </Helmet>
 
       <div className="-mt-8">
-        {/* Rest of the component remains exactly the same */}
         {/* Hero Section */}
         <div className="relative min-h-[70vh] md:h-[70vh]">
           <img
