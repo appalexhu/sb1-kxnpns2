@@ -1,19 +1,3 @@
-/**
- * useMovieSections Hook
- * 
- * Custom hook for managing movie sections on the home page:
- * - Fetches multiple movie/show lists concurrently
- * - Handles loading and error states
- * - Caches results using SWR
- * - Provides organized sections for:
- *   - Trending Now
- *   - Popular TV Shows
- *   - Popular Movies
- *   - Airing Today
- *   - Top Rated TV Shows
- *   - Top Rated Movies
- */
-
 import useSWR from 'swr';
 import { tmdb, Movie, MovieListEndpoint } from '../lib/tmdb';
 
@@ -32,7 +16,17 @@ const ENDPOINTS: { endpoint: MovieListEndpoint; title: string }[] = [
   { endpoint: 'top_rated', title: 'Top Rated Movies' }
 ];
 
-const createCacheKey = (endpoint: MovieListEndpoint) => ['movies', endpoint].join('-');
+const createCacheKey = (endpoint: MovieListEndpoint) => ['movies', endpoint, new Date().toDateString()].join('-');
+
+const logCache = (key: string, data: any) => {
+  if (process.env.NODE_ENV === 'development') {
+    console.log(`Cache hit for ${key}:`, {
+      timestamp: new Date().toISOString(),
+      isCached: !!data,
+      dataSize: data ? JSON.stringify(data).length : 0
+    });
+  }
+};
 
 export function useMovieSections() {
   const results = ENDPOINTS.map(({ endpoint, title }) => {
@@ -44,7 +38,9 @@ export function useMovieSections() {
       {
         revalidateIfStale: false,
         revalidateOnFocus: false,
-        revalidateOnReconnect: false
+        revalidateOnReconnect: false,
+        dedupingInterval: 24 * 60 * 60 * 1000, // 24 hours
+        onSuccess: (data) => logCache(cacheKey, data)
       }
     );
 
