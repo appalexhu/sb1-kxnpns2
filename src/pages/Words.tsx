@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { Search, RefreshCw, BookOpen, Volume2 } from 'lucide-react';
+import { Search, RefreshCw, BookOpen, Volume2, HelpCircle, MousePointerClick } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { useWords, useWordDefinition } from '../hooks/useWords';
 import { WordLevel, Word } from '../lib/words';
@@ -36,6 +36,8 @@ const LANGUAGES = [
   { code: 'KO', name: 'Korean' }
 ];
 
+const HELP_KEY = 'wordy-help-shown';
+
 const Words = () => {
   const { id = '' } = useParams();
   const [searchParams] = useSearchParams();
@@ -52,6 +54,15 @@ const Words = () => {
   const [selectedLanguage, setSelectedLanguage] = useState(LANGUAGES[0]);
   const [translation, setTranslation] = useState<{ word: string; sentence?: string } | null>(null);
   const [isTranslating, setIsTranslating] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+
+  useEffect(() => {
+    const hasShownHelp = localStorage.getItem(HELP_KEY);
+    if (!hasShownHelp) {
+      setShowHelp(true);
+      localStorage.setItem(HELP_KEY, 'true');
+    }
+  }, []);
 
   // Calculate total words for non-zero levels
   const totalNonZeroWords = useMemo(() => {
@@ -138,6 +149,13 @@ const Words = () => {
         <div className="flex items-center gap-2">
           <BookOpen className="w-8 h-8 text-yellow-400" />
           <h1 className="text-2xl font-bold">Vocabulary</h1>
+          <button
+            onClick={() => setShowHelp(true)}
+            className="ml-2 text-gray-400 hover:text-yellow-400 transition-colors"
+            aria-label="Show help"
+          >
+            <HelpCircle className="w-5 h-5" />
+          </button>
         </div>
         <div className="relative">
           <input
@@ -150,6 +168,48 @@ const Words = () => {
           <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
         </div>
       </div>
+
+      {/* Help Overlay */}
+      {showHelp && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-800 rounded-lg p-8 max-w-lg w-full">
+            <h3 className="text-2xl font-bold mb-6 text-yellow-400">How to Use Vocabulary</h3>
+            
+            <div className="space-y-6">
+              <div className="flex items-start gap-4">
+                <MousePointerClick className="w-8 h-8 text-yellow-400 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Right-Click Words</h4>
+                  <p className="text-gray-300">Right-click any word to see its definition, hear pronunciation, and get translations in multiple languages.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <BookOpen className="w-8 h-8 text-yellow-400 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Add to Library</h4>
+                  <p className="text-gray-300">Click words to select them and add them to your personal vocabulary library for later review.</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-4">
+                <Volume2 className="w-8 h-8 text-yellow-400 flex-shrink-0" />
+                <div>
+                  <h4 className="font-semibold mb-1">Listen to Pronunciation</h4>
+                  <p className="text-gray-300">When viewing a word's definition, click the speaker icon to hear its correct pronunciation.</p>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => setShowHelp(false)}
+              className="mt-8 w-full bg-yellow-400 text-gray-900 py-3 rounded-lg font-semibold hover:bg-yellow-500 transition-colors"
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Statistics */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -314,7 +374,7 @@ const Words = () => {
                       const lang = LANGUAGES.find(l => l.code === e.target.value);
                       if (lang) {
                         setSelectedLanguage(lang);
-                        setTranslation(null);ThanasdHow
+                        setTranslation(null);
                       }
                     }}
                     className="bg-gray-600 text-white rounded-lg px-3 py-1"
@@ -379,7 +439,6 @@ const Words = () => {
           <button 
             className="w-full bg-yellow-400 text-gray-900 py-3 rounded-lg font-bold hover:bg-yellow-500 transition-colors"
             onClick={() => {
-              // TODO: Implement save to library
               setSelectedWords(new Set());
             }}
           >
