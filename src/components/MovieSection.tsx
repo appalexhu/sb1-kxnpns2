@@ -1,16 +1,3 @@
-/**
- * MovieSection Component
- * 
- * Displays a horizontal scrollable section of movies/shows:
- * - Responsive grid layout
- * - Smooth horizontal scrolling
- * - Dynamic scroll buttons
- * - Hover effects and animations
- * - Supports different card layouts (poster/backdrop)
- * - Shows rankings for top-rated content
- * - Handles overflow with elegant fade effects
- */
-
 import React, { useRef, useState, useEffect } from 'react';
 import { ChevronRight, ChevronLeft } from 'lucide-react';
 import MovieCard from './MovieCard';
@@ -62,14 +49,14 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies }) => {
   }
 
   return (
-    <section className="space-y-4">
-      <h2 className="text-2xl font-bold px-4">{title}</h2>
+    <section className="px-4">
+      <h2 className="text-2xl font-bold mb-4">{title}</h2>
       
       <div className="relative group">
         {showLeftButton && (
           <button
             onClick={() => scroll('left')}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 text-white p-2 rounded-r-lg 
+            className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-black/80 text-white p-2 rounded-r-lg 
                      opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black"
             aria-label="Scroll left"
           >
@@ -80,7 +67,7 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies }) => {
         {showRightButton && (
           <button
             onClick={() => scroll('right')}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-black/80 text-white p-2 rounded-l-lg 
+            className="absolute -right-4 top-1/2 -translate-y-1/2 z-10 bg-black/80 text-white p-2 rounded-l-lg 
                      opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-black"
             aria-label="Scroll right"
           >
@@ -90,8 +77,14 @@ const MovieSection: React.FC<MovieSectionProps> = ({ title, movies }) => {
 
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-4"
-          style={{ scrollPaddingLeft: '1rem', scrollPaddingRight: '1rem' }}
+          className="flex overflow-x-auto overflow-y-visible scrollbar-hide scroll-smooth py-4"
+          style={{
+            scrollPaddingLeft: '1rem',
+            scrollPaddingRight: '1rem',
+            gap: '1rem',
+            margin: '0 -1rem',
+            padding: '1rem'
+          }}
         >
           {movies.map((movie, index) => (
             <div 
